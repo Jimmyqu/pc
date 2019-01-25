@@ -1,5 +1,5 @@
 import axios from 'axios'
-import qs from "qs";
+import cookie from "./store";
 
 const base='http://api.politics.com/api/admin/'
 
@@ -23,10 +23,11 @@ const post = (url, params) => {
   });
 }
 
+
 const get= (url,params={}) => {
   return axios({
     method: 'get',
-    url: `${base}${url}?token=e232748d6db1fa8228753eed230bb7f3`,
+    url: `${base}${url}?token=${cookie.get('token')}`,
     params,
     timeout: 5000,
   });
