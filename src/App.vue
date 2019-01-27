@@ -11,7 +11,7 @@
     </div>
   </div>
 </template>
-h
+
 <script>
 import api from './common/api/index'
 import staticHeader from './components/ele/staticHeader'
