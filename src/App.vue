@@ -4,6 +4,7 @@
       <staticHeader></staticHeader>
       <div class="bg-class">
         <div class="common-width">
+          junjie
           <router-view/>
         </div>
       </div>
