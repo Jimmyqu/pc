@@ -2,7 +2,7 @@
   <div id="app">
     <div >
       <staticHeader></staticHeader>
-      <div class="bg-class">1
+      <div class="bg-class">
         <div class="common-width">
           <router-view/>
         </div>
