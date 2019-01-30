@@ -1,7 +1,7 @@
 import axios from 'axios'
 import cookie from "./store";
 
-const base='http://api.politics.com/api/admin/'
+const base='http://api.politics.com/api/'
 
 
 const post = (url, params) => {
@@ -27,7 +27,7 @@ const post = (url, params) => {
 const get= (url,params={}) => {
   return axios({
     method: 'get',
-    url: `${base}${url}?token=${cookie.get('token')}`,
+    url: `${base}${url}?`,
     params,
     timeout: 5000,
   });

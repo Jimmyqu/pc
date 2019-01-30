@@ -1,6 +1,7 @@
 .login-input{
   width: 500px;
   margin: 0 auto;
+
 }
 .reg-code .el-form-item__content{
 
@@ -31,4 +32,35 @@
   background-color: #3D9EE1;
   font-size: 20px;
   color:#fff;
+}
+.city-select{
+  display: flex;
+  justify-content: space-between;
+}
+.selsct_department{
+  width: 100%;
+}
+.large-btn-box button{
+  float: right;
+  height: 64px;
+  width: 240px;
+  background-color: #3D9EE1;
+  font-size: 20px;
+  color:#fff;
+  margin-left: 20px!important;
+}
+.concat .el-input{
+  width: 330px;
+}
+.concat-code .el-input{
+  width: 180px;
+}
+.el-step__main{
+margin-left: -20px;
+}
+.concat .el-form-item{
+  margin-top: 20px;
+}
+.btn-group button{
+  width: 166px;
 }
