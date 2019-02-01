@@ -15,7 +15,7 @@
             <el-form-item>
               <p>选择区域</p>
               <div class="city-select">
-                <el-select v-model="provinceId" placeholder="省" class="selsct_city">
+                <el-select v-model="provinceId" :disabled="selectPr" placeholder="湖北省" class="selsct_city">
                   <el-option
                     v-for="item in provinceList"
                     :key="item.id"
@@ -23,7 +23,7 @@
                     :value="item.id">
                   </el-option>
                 </el-select>
-                <el-select v-model="cityId" placeholder="市" class="selsct_city">
+                <el-select v-model="cityId" clearable placeholder="地级市/州" class="selsct_city">
                   <el-option
                     v-for="item in cityList"
                     :key="item.id"
@@ -31,7 +31,7 @@
                     :value="item.id">
                   </el-option>
                 </el-select>
-                <el-select v-model="areaId" placeholder="区" class="selsct_city" @change="handlearea">
+                <el-select v-model="areaId" clearable placeholder="县/区" class="selsct_city" @change="handlearea">
                   <el-option
                     v-for="item in areaList"
                     :key="item.id"
@@ -54,31 +54,38 @@
             </el-form-item>
             <el-form-item>
               <p>选择部门</p>
-              <div class="btn-group">
-                <el-button v-for="item,index in typeList.slice(0,5)" :class="{'dis':item.disable}" :key="index"
-                           :disabled="item.disable" @click="handleChoseType(item)">{{item.dept_name}}
-                </el-button>
+              <div v-if="typeList.length>0">
+                <div class="btn-group">
+                  <el-button v-for="item,index in typeList.slice(0,5)" :class="{'dis':item.disable}" :key="index"
+                             :disabled="item.disable" @click="handleChoseType(item)">{{item.dept_name}}
+                  </el-button>
+                </div>
+                <div class="btn-group">
+                  <el-button v-for="item,index in  typeList.slice(5,10)" :class="{'dis':item.disable}" :key="index"
+                             :disabled="item.disable" @click="handleChoseType(item)">{{item.dept_name}}
+                  </el-button>
+                </div>
               </div>
-            </el-form-item>
-            <el-form-item>
-              <div class="btn-group">
-                <el-button v-for="item,index in  typeList.slice(5,10)" :class="{'dis':item.disable}" :key="index"
-                           :disabled="item.disable" @click="handleChoseType(item)">{{item.dept_name}}
-                </el-button>
+              <div v-else style="color: #8c939d">
+                  暂无部门
               </div>
+
             </el-form-item>
+
           </el-form>
         </div>
         <div v-if="setpTwoView">
           <el-form ref="form" :model="setpTwoForm">
-            <el-form-item>
-              <p>选择区域</p>
-              <el-input v-model="setpTwoForm.title" placeholder="请输入标题"></el-input>
+            <el-form-item
+            >
+              <p>标题</p>
+              <el-input :maxlength="21" v-model="setpTwoForm.title" placeholder="请输入标题"></el-input>
             </el-form-item>
             <el-form-item>
               <p>问题内容</p>
               <el-input
                 type="textarea"
+                resize="none"
                 :rows="5"
                 placeholder="请输入内容"
                 v-model="setpTwoForm.content">
@@ -89,14 +96,14 @@
                 :on-success="handleAvatarSuccess"
                 :action='uploadUrl'
                 list-type="picture-card"
-                :limit="4"
+                :limit="6"
                 :on-remove="handleAvatarRemove"
                 :before-upload="beforeAvatarUpload"
               >
                 <i class="el-icon-plus"></i>
               </el-upload>
             </el-form-item>
-            <el-form-item>
+            <el-form-item style="margin-top: -20px">
               <el-switch
                 active-color="#13ce66"
                 style="display: block"
@@ -121,16 +128,37 @@
             <el-form-item class="concat-container">
               <div class="concat">
                 <p>联系方式</p>
-                <el-form-item label="您的姓名">
-                  <el-input v-model="setpThreeForm.name" placeholder="请输入姓名"></el-input>
+                <el-form-item
+                  label="您的姓名"
+                            prop="name"
+                            :rules=" [
+                { message: '请输入姓名', trigger: 'blur'},
+                {min: 2, max: 6, message: '请输入正确的姓名(2-6位)', trigger: 'blur'}
+              ]"
+                >
+                  <el-input
+                    v-model="setpThreeForm.name"
+                    placeholder="请输入姓名"></el-input>
                 </el-form-item>
-                <el-form-item label="联系电话">
+                <el-form-item label="联系电话"
+                              prop="mobile"
+                              :rules=" [
+                { message: '请输入手机号码', trigger: 'blur'},
+                {min: 11, max: 11, message: '请输入正确的手机号码', trigger: 'blur'}]"
+                >
                   <el-input v-model="setpThreeForm.mobile" placeholder="请输入手机号码"></el-input>
                 </el-form-item>
-                <el-form-item label="验证号码" class="concat-code">
+                <el-form-item
+                  label="验证号码"
+                  class="concat-code" v
+                  v-show="showCode!=2"
+                  prop="code"
+                  :rules=" [
+                { message: '请输入验证码', trigger: 'change'},
+                {min: 4, max: 4, message: '请输入正确的验证码', trigger: 'change'}]"
+                >
                   <el-input v-model="setpThreeForm.code"></el-input>
                   <div class="code-box">
-                    <!--<el-button :loading="smsLoading" >获取验证码</el-button>-->
                     <el-button :loading="smsLoading" @click="postCode">{{smsLoading?smsSec+'s后获取':'获取验证码'}}</el-button>
                   </div>
                 </el-form-item>
@@ -146,11 +174,11 @@
         </div>
       </div>
       <div class="large-btn-box">
-        <el-button v-show="setpTwoView" :disabled="btn2" @click="handleSetpTwo">下一3步</el-button>
-        <el-button v-show="setpOneView" :disabled="btn1" @click="handleSetpOne">下一2步</el-button>
-        <el-button v-show="setpTwoView" @click="TwoToSetpOneView">上2一步</el-button>
+        <el-button v-show="setpTwoView" :disabled="btn2" @click="handleSetpTwo">下一步</el-button>
+        <el-button v-show="setpOneView" :disabled="btn1" @click="handleSetpOne">下一步</el-button>
+        <el-button v-show="setpTwoView" @click="TwoToSetpOneView">上一步</el-button>
         <el-button v-show="setpThreeView" :disabled="submit" @click="handleSubmit">提&nbsp交</el-button>
-        <el-button v-show="setpThreeView" @click="ThreeToSetpTwoView">上3一步</el-button>
+        <el-button v-show="setpThreeView" @click="ThreeToSetpTwoView">上一步</el-button>
       </div>
     </div>
     <div v-else class="succ-container">
@@ -159,10 +187,10 @@
             <h2>提交成功</h2>
             <p class="info">相关部门将尽快联系您</p>
             <div class="sec">
-              <span ><i style="color: #F6574E">{{commitSec}}秒</i>后返回首页</span> <a href="">问政首页</a>
+              <span ><i style="color: #F6574E">{{commitSec}}秒</i>后返回首页</span> <a href="./jcwz修改版本.html">问政首页</a>
             </div>
             <p>
-              <a href="">查看我的问政</a> | <a href="">查看问政排行</a>
+              <a href="./回复量排行榜.html">查看回复率排行</a> | <a href="./满意度排行榜.html">查看满意度排行</a>
             </p>
             <el-button>立即返回</el-button>
           </div>
@@ -179,6 +207,9 @@
     name: "index",
     data() {
       return {
+        autosize:false,
+        selectPr:true,
+        showCode:2,
         commitSec:5,
         commitSucc:true,
         smsSec: 0,
@@ -257,9 +288,10 @@
                 this.commitSec--
               }else {
                 this.commitSec=0
+                window.location.href="./jcwz修改版本.html"
+                clearInterval(timer)
               }
             },1000)
-            clearInterval(timer)
 
             //todo 跳转链接首页
           }else {
@@ -350,9 +382,7 @@
       },
       //上传action成功后
       handleAvatarSuccess(res, file) {
-
         this.setpTwoForm.url.push(res.data.common.app.src)
-
       },
       //删除成功后
       handleAvatarRemove(file) {
@@ -381,8 +411,8 @@
             skey: this.$cookie.get('token')
           })
           this.departmentList = res.data.data.common.app
-        } catch (e) {
 
+        } catch (e) {
           this.$notify.error({
             title: '错误',
             message: '数据请求错误'
@@ -391,20 +421,30 @@
       },
       //获取具体部门列表
       async getDepartment() {
-        if (this.provinceId && this.cityId && this.areaId) {
+        this.provinceId?this.provinceId=this.provinceId:this.provinceId=1
+        let cityId,areaId;
+        this.cityId==0?cityId=0:cityId=this.cityId
+        this.areaId==0?areaId=0:areaId=this.areaId
+        console.log(this.provinceId)
+        console.log(this.cityId)
+        console.log(this.areaId)
+        if (this.provinceId) {
           try {
             let res = await this.$ajax.get(getDepartmentUrl, {
               type: 'pc',
               skey: this.$cookie.get('token'),
-              area: `${this.provinceId}|${this.cityId}|${this.areaId}`,
+              area: `${this.provinceId}|${cityId}|${areaId}`,
               deptype: this.departmentVal.split(',')[0],
               type_name: this.departmentVal.split(',')[1]
             })
             res.data.data.common.app.map(item => {
               item.disable = false
             })
+
             this.typeList = res.data.data.common.app
+            console.log(this.typeList)
           } catch (e) {
+            console.log(e)
             this.$notify.error({
               title: '错误',
               message: '数据请求错误'
@@ -413,7 +453,7 @@
         } else {
           this.$notify.error({
             title: '错误',
-            message: '请先选择省市区'
+            message: '请先选择省'
           });
         }
       },
@@ -461,17 +501,29 @@
         let res = await this.$ajax.get('arealist', {
           type: 'pc'
         })
-        this.provinceList = res.data.data.common.app
+        //省不可选
 
+        this.provinceList = res.data.data.common.app
+        this.cityList = this.provinceList[0].city
+        console.log(this.provinceList)
       },
       selectQustionType(id) {
         this.selected = id
 
         this.setpThreeForm.stype_id = id
+      },
+      //初始是否限制手机
+      async isShowCode(){
+        let res = await this.$ajax.get('maudit', {
+          type: 'pc',
+          skey:this.$cookie.get('token')
+        })
+        this.showCode=res.data.data.common.app.mobile_audit
+
       }
     },
     mounted() {
-
+      this.isShowCode()
       this.getType()
       this.getCityList()
       this.getQustionType()
@@ -484,18 +536,13 @@
         if (id == null || id == "") {
 
         } else {
-          console.log(id)
           let res = this.provinceList.filter(item => {
             return item.id == id
           })
           this.cityList = res[0].city
-          this.cityId = '',
-            this.areaId = ''
         }
-
       },
       cityId(id) {
-        console.log(this.cityList)
         let res = this.cityList.filter(item => {
           return item.id == id
         })
@@ -505,7 +552,10 @@
         }else {
           this.areaList = []
         }
-
+      },
+      areaId(id){
+        this.typeList=[]
+        // this.getDepartment()
       },
       ['setpTwoForm.content'](val) {
         if (this.setpTwoForm.title.length > 0 && val != '') {
@@ -516,19 +566,47 @@
       },
       setpThreeForm: {
         handler(newValue, oldValue) {
-          let setp3Done = Array.from(new Set(Object.values(this.setpThreeForm))).filter(function (n) {
-            return n
-          }).length
-          setp3Done === 4 ? this.submit = false : this.submit = true
+
+          this.$refs['form'].validate((valid) => {
+              if(valid){
+                let setp3Done = Array.from(new Set(Object.values(this.setpThreeForm))).filter(function (n) {
+                  return n
+                }).length
+
+                if(this.showCode==2&&setp3Done==3){
+                  this.submit = false
+                }else if(this.showCode==1&&setp3Done==4){
+                  this.submit = false
+                }else {
+                  this.submit = true
+                }
+
+              }else {
+                this.submit = true
+                console.log('nonono!!')
+                return false
+              }
+          })
+
+          // let setp3Done = Array.from(new Set(Object.values(this.setpThreeForm))).filter(function (n) {
+          //   return n
+          // }).length
+          // if(this.showCode==2){
+          //
+          //   setp3Done === 3 ? this.submit = false : this.submit = true
+          // }else {
+          //   setp3Done === 4 ? this.submit = false : this.submit = true
+          // }
+
         },
         deep: true
       }
-
     }
   }
 </script>
 
 <style scoped lang="less">
+
   .select {
     background-color: #3D9EE1;
     color: #fff !important;

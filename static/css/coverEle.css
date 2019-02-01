@@ -64,3 +64,21 @@ margin-left: -20px;
 .btn-group button{
   width: 166px;
 }
+.el-upload-list--picture-card .el-upload-list__item{
+  width: 100px;
+  height: 100px;
+}
+.el-upload--picture-card{
+  width: 100px;
+  height: 100px;
+  line-height: 100px;
+}
+
+.concat .el-form-item__error{
+  margin-left: 70px;
+}
+
+.btn-group .el-button.is-disabled, .el-button.is-disabled:focus, .el-button.is-disabled:hover{
+  background-color:rgba(61, 158, 225, 1);
+  color: #fff;
+}

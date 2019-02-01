@@ -14,13 +14,13 @@
           </el-form-item>
           <el-form-item class="login-input login-btn">
             <div class="container-box-forget">
-              <span @click = "toForgot('ruleLogin')">
+              <span @click = "toForgot('ruleForgot')">
                     忘记密码
               </span>
             </div>
             <el-button @click="handlerLogin" :loading="loginLoading">登录</el-button>
             <div class="container-box-reg-text">
-                <span @click="toReg('ruleLogin')">
+                <span @click="toReg('ruleReg')">
                   立即注册
                 </span>
             </div>
@@ -69,7 +69,7 @@
             </div>
             <el-button @click="handlerReg('ruleReg')">确认</el-button>
             <div class="container-box-forget">
-                <span @click="toLogin('ruleReg')">
+                <span @click="toLogin('ruleLogin')">
                   已有账号，去登录
                 </span>
             </div>
@@ -117,7 +117,7 @@
           </div>
           <el-button @click="handlerForgot">确认</el-button>
           <div class="container-box-forget">
-                <span @click="toLogin('ruleForgot')">
+                <span @click="toLogin('ruleLogin')">
                   已想起，去登录
                 </span>
           </div>
@@ -190,6 +190,7 @@
   const postCodeUrl= 'regsendmsg'
   const regisUrl ='regis'
   const postLogin='login'
+  const retokenUrl='retoken'
 
     export default {
       name: "index",
@@ -245,8 +246,8 @@
                 {min: 6, max: 8, message: '长度为6-8位的数字或字母', trigger: 'change'}
               ],
               name:[
-                {required: true, message: '请输入用户名', trigger: 'change'},
-                {min: 6, max: 8, message: '长度为6-8位的数字或字母', trigger: 'change'}
+                {required: true, message: '请输入姓名', trigger: 'change'},
+                {min: 6, max: 8, message:  '请输入正确的姓名(2-6位)', trigger: 'change'}
               ],
               radio: [
                 { required: true, message: '请阅读用户协议', trigger: 'change' }
@@ -282,20 +283,30 @@
         toForgot(val){
           this.loginShow=false;
           this.forgetShow=true
-          this.$refs[val].resetFields();
+
+          this.$nextTick(()=>{
+            this.$refs[val].resetFields();
+          })
+
         },
         //切换注册框
         toReg(val){
           this.loginShow=false;
           this.regShow=true
-          this.$refs[val].resetFields();
+          this.$nextTick(()=>{
+            this.$refs[val].resetFields();
+          })
+
         },
         //切换登录框
         toLogin(val){
           this.forgetShow=false
           this.regShow=false
           this.loginShow=true;
-          this.$refs[val].resetFields();
+          this.$nextTick(()=>{
+            this.$refs[val].resetFields();
+          })
+
         },
         //验证码
         async postCode(){
@@ -346,7 +357,7 @@
                 password:this.loginForm.pass,
                 type:'pc'
               }).then(res=>{
-                console.log(res)
+
                 if(res.data.state){
                   //todo 跳转页面
                  this.$cookie.set('token',res.data.data.common.app.skey,res.data.data.common.app.expire)
@@ -447,6 +458,34 @@
             this.regShow=false
           }
         }
+      },
+      async mounted(){
+
+        //是否有可用cookie
+        if(this.$cookie.get('token')){
+          try {
+            let res = await this.$ajax.get(retokenUrl,{
+              skey:this.$cookie.get('token'),
+              type:'pc'
+            });
+            if(res.data.state==true){
+              this.$cookie.set('token',res.data.data.common.app.skey,res.data.data.common.app.expire)
+              this.$router.push('ask')
+            }else {
+              this.$notify.error({
+                title: '错误',
+                message: '请重新登录'
+              });
+            }
+          }catch (e) {
+            this.$notify.error({
+              title: '错误',
+              message: e
+            });
+          }
+        }
+
+
       }
     }
 </script>

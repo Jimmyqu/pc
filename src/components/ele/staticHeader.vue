@@ -17,8 +17,8 @@
               <li><a href="http://health.cnhubei.com/">娱乐</a></li>
               <li><a href="http://edu.cnhubei.com/">视频</a></li>
               <li><a href="http://auto.cnhubei.com/">图片</a></li>
-              <li class="more">更多
-                <div class="sub01">
+              <li class="more"  @mouseenter="enter" @mouseleave="leave">更多
+                <div class="sub01" style="display: block" v-show="meanShow">
                   <a href="">党建</a>
                   <a href="">文化</a>
                   <a href="">体育</a>
@@ -57,13 +57,13 @@
       <div class="jcwz_nav" id="">
         <div class="w1200">
           <ul class="list_across line">
-            <li class="first"><a href="">首页</a></li>
-            <li><a href="">省直厅局</a></li>
-            <li><a href="">市州区县</a></li>
-            <li><a href="">每日回复</a></li>
-            <li><a href="">问政报告</a></li>
-            <li><a href="">回复量排行榜</a></li>
-            <li class="last"><a href="">满意度排行榜</a></li>
+            <li class="first"><a href="./jcwz修改版本.html">首页</a></li>
+            <li><a href="./省直厅局修改1.0.html">省直厅局</a></li>
+            <li><a href="./市州区县.html">市州区县</a></li>
+            <li><a href="#">每日回复</a></li>
+            <li><a href="#">问政报告</a></li>
+            <li><a href="./回复量排行榜.html">回复率排行榜</a></li>
+            <li class="last"><a href="./满意度排行榜.html">满意度排行榜</a></li>
           </ul>
         </div>
       </div>
@@ -72,7 +72,20 @@
 
 <script>
     export default {
-        name: "staticHeader"
+        name: "staticHeader",
+      data(){
+          return {
+            meanShow:false
+          }
+      },
+      methods:{
+        enter(){
+          this.meanShow=true
+        },
+        leave(){
+          this.meanShow=false
+        }
+      }
     }
 </script>
 
